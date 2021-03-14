@@ -23,7 +23,7 @@ class Config(object):
 class DevelopmentConfig(Config):
     """Development config class."""
     DEBUG = True
-    MYSQL_DB = "ops1"
+    MYSQL_DB = "ops11"
 
 
 class ProductionConfig(Config):
