@@ -15,10 +15,18 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-
+from rest_framework import routers
 from apps.book import urls as book_urls
+from apps.book.router import book_router
+
+router = routers.DefaultRouter()
+router.registry.extend(book_router.registry)
+
+API_URLS = []
+API_URLS.extend(book_urls.urlpatterns)
+API_URLS.extend(router.urls)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include(book_urls)),
+    path('api/', include(API_URLS)),
 ]

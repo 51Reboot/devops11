@@ -2,10 +2,21 @@ from django.views import View
 from django.http.response import HttpResponse
 
 from .models import Publisher
+from .serializers import PublisherModelSerializer
 
 
 from rest_framework.views import APIView
+from rest_framework.generics import GenericAPIView, ListAPIView, CreateAPIView, ListCreateAPIView
+from rest_framework.viewsets import ModelViewSet
+
+
+from rest_framework.decorators import action
 from rest_framework.exceptions import NotFound
+
+from rest_framework.parsers import JSONParser, FormParser, MultiPartParser
+from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer, AdminRenderer
+from rest_framework_yaml.renderers import YAMLRenderer
+from rest_framework_csv.renderers import CSVRenderer
 
 from base.response import JSONAPIResponse
 # Create your views here.
@@ -38,6 +49,8 @@ class PublisherView(View):
 # DRF CBV
 # APIView
 class PublisherApiView(APIView):
+    # parser_classes = [JSONParser, FormParser]
+    renderer_classes = [JSONRenderer, BrowsableAPIRenderer, AdminRenderer, YAMLRenderer, CSVRenderer]
 
     def get_object(self, pk):
         try:
@@ -46,6 +59,8 @@ class PublisherApiView(APIView):
             raise NotFound()
 
     def get(self, request, format=None, *args, **kwargs):
+        print("django get param", request.GET)
+        print("drf get param", request.query_params)
         # /api/v1/book/publisher
         if kwargs.get("pk"):
             # 查看单条数据
@@ -59,6 +74,11 @@ class PublisherApiView(APIView):
 
     def post(self, request):
         data = request.data
+        # content-type: application/json
+        # print(f"drf data--> {data}", request.content_type)
+        #
+        # print("django data->", request.POST, request.content_type)
+        # return JSONAPIResponse(code=-2, data=None, message=None)
 
         p = Publisher.objects.create(**data)
         return JSONAPIResponse(code=0, data=p.serializer(), message=None)
@@ -77,3 +97,33 @@ class PublisherApiView(APIView):
         p = self.get_object(kwargs['pk'])
         p.delete()
         return JSONAPIResponse(code=0, data=None, message="Delete ok.")
+
+
+class PublisherListAPIView(ListAPIView):
+    queryset = Publisher.objects.all()
+    serializer_class = PublisherModelSerializer
+
+
+class PublisherCreateAPIView(CreateAPIView):
+    queryset = Publisher.objects.all()
+    serializer_class = PublisherModelSerializer
+
+
+class PublisherListCreateAPIView(ListCreateAPIView): # update or delete
+    queryset = Publisher.objects.all()
+    serializer_class = PublisherModelSerializer
+
+
+class PublisherModelViewSet(ModelViewSet):
+    queryset = Publisher.objects.all()
+    serializer_class = PublisherModelSerializer
+
+    @action(methods=['get'], detail=False, url_path="set_url")
+    def print_url(self, request):
+        """
+        update password
+        """
+        print("update password")
+        return JSONAPIResponse(code=0, data=None, message=None)
+
+
