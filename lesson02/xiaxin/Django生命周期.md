@@ -1,6 +1,7 @@
 # Django生命周期
 
-![](_v_images/20210317153817337_1671648617.png =1000x)  
+![image](https://user-images.githubusercontent.com/35423796/111591385-54dcca00-8802-11eb-9734-f3e321c4cfaf.png)
+
 
 1. 客户端发起 `http` 请求，访问 `web` 服务器，如 `nginx`, `nginx` 转发给 `wsgi` 即网关；
 
