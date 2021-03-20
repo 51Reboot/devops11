@@ -1,4 +1,4 @@
-[toc]
+
 
 
 ### 一、Django中间件
@@ -55,7 +55,7 @@ MIDDLEWARE = [
 
 
 - 自定义中间件
-```
+```python
 from django.utils.deprecation import MiddlewareMixin
 
 class MD1(MiddlewareMixin): 
@@ -119,7 +119,7 @@ class WSGIHandler(base.BaseHandler):
 ```
 
 - `BaseHandler`
-```
+```python
 class BaseHandler:
     ...
     
