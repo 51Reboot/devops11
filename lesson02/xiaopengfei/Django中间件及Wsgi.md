@@ -92,7 +92,7 @@ WSGI(Web Server Gateway Interface) 是一种描述web server如何web applicatio
 
 ![](https://note.youdao.com/yws/public/resource/43fcc9bafc33508fa1f7b8eaedb7d8c0/xmlnote/35AB76A20D75474FB1C1F89DFEA62D44/72400)
 
-- `BaseHandler`
+- `WSGIHandler`
 ```python
 class WSGIHandler(base.BaseHandler):
     request_class = WSGIRequest
