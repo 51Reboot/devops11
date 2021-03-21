@@ -48,6 +48,7 @@ INSTALLED_APPS = [
 
     # Third
     'rest_framework',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
@@ -162,3 +163,19 @@ STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 #########################
 
 AUTH_USER_MODEL = 'user.UserProfile'
+
+REST_FRAMEWORK = {
+    "DATETIME_FORMAT": "%Y-%m-%d %H:%M:%S",
+    'EXCEPTION_HANDLER': 'base.exceptions.custom_exception_handler',
+}
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://{}:{}/1".format(Config.REDIS_HOST, Config.REDIS_PORT),
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
+

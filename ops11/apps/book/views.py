@@ -2,8 +2,11 @@ from django.views import View
 from django.http.response import HttpResponse
 
 from .models import Publisher
+from .models import Book
 from .serializers import PublisherModelSerializer
-
+from .serializers import BookModelSerializer
+from .filters import BookFilter
+from .filters import CustomBookFilter
 
 from rest_framework.views import APIView
 from rest_framework.generics import GenericAPIView, ListAPIView, CreateAPIView, ListCreateAPIView
@@ -12,6 +15,8 @@ from rest_framework.viewsets import ModelViewSet
 
 from rest_framework.decorators import action
 from rest_framework.exceptions import NotFound
+from rest_framework.filters import SearchFilter, OrderingFilter
+from django_filters import rest_framework as filters
 
 from rest_framework.parsers import JSONParser, FormParser, MultiPartParser
 from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer, AdminRenderer
@@ -19,6 +24,10 @@ from rest_framework_yaml.renderers import YAMLRenderer
 from rest_framework_csv.renderers import CSVRenderer
 
 from base.response import JSONAPIResponse
+from base.pagination import CustomPageNumberPagination
+from base.pagination import CustomLimitOffsetPagination
+from base.throttling import CustomAnonRateThrottle
+from base.views import BaseModelViewSet
 # Create your views here.
 
 
@@ -117,6 +126,10 @@ class PublisherListCreateAPIView(ListCreateAPIView): # update or delete
 class PublisherModelViewSet(ModelViewSet):
     queryset = Publisher.objects.all()
     serializer_class = PublisherModelSerializer
+    # pagination_class = CustomPageNumberPagination
+    pagination_class = CustomLimitOffsetPagination
+    filter_backends = [SearchFilter, OrderingFilter]
+    search_fields = ["name", "address"]
 
     @action(methods=['get'], detail=False, url_path="set_url")
     def print_url(self, request):
@@ -125,5 +138,29 @@ class PublisherModelViewSet(ModelViewSet):
         """
         print("update password")
         return JSONAPIResponse(code=0, data=None, message=None)
+
+
+class BookModelViewSet(ModelViewSet):
+    queryset = Book.objects.all()
+    serializer_class = BookModelSerializer
+    http_method_names = ['get', 'post']
+    filter_backends = [SearchFilter, OrderingFilter, filters.DjangoFilterBackend]
+    search_fields = ["name", "publisher__name", "remark"]
+    filterset_fields = ['name', 'publisher_state', "price"]
+    # filterset_class = BookFilter
+    filterset_class = CustomBookFilter
+    throttle_classes = [CustomAnonRateThrottle, ]
+
+    # def destroy(self, request, *args, **kwargs):
+    #     return JSONAPIResponse(code=-1, data=None, message="DELETE not allow.")
+
+
+class BookBaseModelViewSet(BaseModelViewSet):
+    queryset = Book.objects.all()
+    serializer_class = BookModelSerializer
+    pagination_class = None
+    search_fields = ["name"]
+    http_method_names = ['get']
+
 
 
